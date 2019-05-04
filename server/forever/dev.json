@@ -1,0 +1,6 @@
+{
+  "watch": true,
+  "script": "index.js",
+  "sourceDir": "/Users/trevor/git/lednet/server",
+  "logFile": "/Users/trevor/log/lednet.log"
+}
