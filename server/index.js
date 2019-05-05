@@ -2,11 +2,20 @@ const _ = require('lodash');
 const WebSocket = require('ws');
 const net = require('net');
 const createParser = require('./parser');
+const createStrand = require('./js-opc/strand');
 
 
 const opcServer = net.createServer(connection => {
   connection.pipe(createParser()).on('data', message => {
-    console.log('message', message);
+    // console.log('message', message);
+    // Read pixel colors
+    if (message.command === 0) {
+      const strand = createStrand(message.data);
+      for (var i = 0; i < strand.length; i++) {
+        console.log("  Pixel", i, strand.getPixel(i));
+      }
+      console.log('strand', strand.length);
+    }    
   })
 });
 
