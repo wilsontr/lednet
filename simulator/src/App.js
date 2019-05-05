@@ -1,5 +1,5 @@
 import React from 'react';
-import { Tile } from './Tile';
+import { Grid } from './Grid';
 import './App.css';
 
 const host = '127.0.0.1:8080';
@@ -7,7 +7,7 @@ const host = '127.0.0.1:8080';
 function App() {
   return (
     <div className="App">
-      <Tile host={host} pixelId={0} />
+      <Grid host={host} width={3} height={3} />
     </div>
   );
 }

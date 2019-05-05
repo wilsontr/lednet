@@ -1,10 +1,9 @@
 const _ = require('lodash');
 const WebSocket = require('ws');
-// const createParser = require('./js-opc/parser');
-// const createStrand = require('./js-opc/strand');
+const randomColor = require('./sketches/randomColor');
 
 const padByte = number => String(number).padStart(3, '0');
-const serializeColor = ([r, g, b]) => `${padByte(r)}${padByte(g)}${padByte(b)}`;
+const serializeColor = ([r, g, b]) => `c${padByte(r)}${padByte(g)}${padByte(b)}`;
 
 const wss = new WebSocket.Server({ 
   port: 8080,
@@ -55,51 +54,58 @@ wss.on('connection', (ws, request) => {
 });
 
 
-// const opcServer = net.createServer(connection => {
-//   connection.pipe(createParser()).on('data', message => {
-//     // Read pixel colors
-//     if (message.command === 0) {
-//       const strand = createStrand(message.data);
-//       for (var i = 0; i < strand.length; i++) {
-//         // console.log("  Pixel", i, strand.getPixel(i));
-//         const [red, green, blue] = strand.getPixel(i);
-//         const color = {red, green, blue};
-
-//         if (socket) {
-//           const colorString = `c${serializeColor(color)}`;
-//           // console.log('color', colorString);
-//           socket.send(colorString);
-//         }        
-//       }
-//     }    
-//   })
-// });
-
-// opcServer.listen(7890);
-
-
-
 console.log('opc server started on port 7890');
 
-let color = [0, 0, 0]
-let currentColor = 'red';
+const gridSize = {
+  height: 3,
+  width: 3,
+};
 
-setInterval(() => {
-  // console.log(currentColor);
-  switch (currentColor) {
-    case 'red': color = [255, 0, 0]; currentColor = 'blue'; break;
-    case 'blue': color = [0, 0, 255]; currentColor = 'green'; break;
-    case 'green': color = [0, 255, 0]; currentColor = 'red'; break;
-  }
-}, 500);
+const ledColors = [];
+
+const phase = 0;
+const freq = 0.1;
+const amplitude = 128;
+const offset = 128;
+let frame = 0;
+
+for (let idx = 0; idx < (gridSize.height * gridSize.width); idx++) {
+  ledColors[idx] = [0, 0, 0];
+}
+
+// for (let x = 0; x < gridSize.width; x++ ) {
+//   ledColors[x] = new Array();
+//   for (let y = 0; y < gridSize.width; y++ ) {
+//     ledColors[x][y] = [0, 0, 0];
+//   }  
+// }
+
+// setInterval(() => {
+//   for (let x = 0; x < gridSize.width; x++) {
+//     for (let y = 0; y < gridSize.width; y++) {
+//       ledColors[x][y] = Math.random() * 255;
+//     }
+//   }
+// }, 500);
+
+randomColor(ledColors, gridSize.height, gridSize.width);
+
+// const getClientPixelColor = clientId => {
+//   const y = Math.floor(clientId / gridSize.width);
+//   const x = clientId % gridSize.width;
+
+// }
+
 
 setInterval(() => { 
-  const colorString = `c${serializeColor(color)}`;
+  // const colorString = `c${serializeColor(color)}`;
   // console.log('color', colorString);
   // socket.send(colorString);
   clients.forEach(client => {
-    if (client && client.ws) {
+    if (client && client.ws) {      
+      const colorString = serializeColor(ledColors[client.pixelId]);
       client.ws.send(colorString);
     }
   });
+  
 }, 33);

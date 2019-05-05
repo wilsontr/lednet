@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import './Tile.css';
+import './Led.css';
 
-export class Tile extends React.PureComponent {
+export class Led extends React.PureComponent {
   static propTypes = { 
     pixelId: PropTypes.number.isRequired,
     host: PropTypes.string.isRequired,
@@ -11,11 +11,6 @@ export class Tile extends React.PureComponent {
   state = {
     color: [0, 0, 0],
   };
-
-  // constructor(props) {
-  //   super(props);
-
-  // }
 
   componentDidMount() {
     this.connect();
@@ -28,43 +23,54 @@ export class Tile extends React.PureComponent {
   }
 
   connect = () => {
-    const { host } = this.props;
-    this.ws = new WebSocket(`ws://${host}`);
-    this.ws.onopen = this.handleWebsocketOpen;
-    this.ws.onclose = this.handleWebsocketClose;
-    this.ws.onmessage = this.handleWebsocketMessage;    
-    this.ws.onerror = this.handleWebsocketError;    
+    try {
+      const { host } = this.props;
+      this.ws = new WebSocket(`ws://${host}`);
+      this.ws.onopen = this.handleWebsocketOpen;
+      this.ws.onclose = this.handleWebsocketClose;
+      this.ws.onmessage = this.handleWebsocketMessage;    
+      this.ws.onerror = this.handleWebsocketError;          
+    } catch (error) {
+      console.error(error);
+      setTimeout(() => {
+        this.connect();
+      }, 5000);
+    }
   }
 
   waitForConnection = (callback, interval) => {
-      if (this.ws.readyState === 1) {
-          callback();
-      } else {
-          var that = this;
-          // optional: implement backoff for interval here
-          setTimeout(function () {
-              that.waitForConnection(callback, interval);
-          }, interval);
-      }
+    if (this.ws.readyState === 1) {
+        callback();
+    } else {
+        var that = this;
+        // optional: implement backoff for interval here
+        setTimeout(function () {
+            that.waitForConnection(callback, interval);
+        }, interval);
+    }
   }
 
   handleWebsocketOpen = () => {
-    const { pixelId } = this.props;
-    this.waitForConnection(() => {
-      this.ws.send(`pixel ${pixelId}`);
-    }, 20);
+    try {
+      const { pixelId } = this.props;
+      this.waitForConnection(() => {
+        this.ws.send(`pixel ${pixelId}`);
+      }, 500);
+    } catch (error) {
+      console.log('sending pixel id', error);
+    }
   }
 
   handleWebsocketClose = () => {
     setTimeout(() => {
       this.connect();
-    }, 500);
+    }, 5000);
   }  
 
   handleWebsocketError = () => {
     setTimeout(() => {
       this.connect();
-    }, 500);
+    }, 1000);
   }    
 
   handleWebsocketMessage = event => {
@@ -76,7 +82,7 @@ export class Tile extends React.PureComponent {
     if (data[0] === 'c') {
       const red = parseInt(data.slice(1, 4));
       const green = parseInt(data.slice(4, 7));
-      const blue = parseInt(data.slice(7));
+      const blue = parseInt(data.slice(7, 10));
       this.setState({ color: [red, green, blue] });
     }
   }
@@ -85,7 +91,7 @@ export class Tile extends React.PureComponent {
     const { color: [ red, green, blue ] } = this.state;
     const colorString = `rgb(${red}, ${green}, ${blue})`;
     return (
-      <span className="Tile" style={{ backgroundColor: colorString }}>
+      <span className="Led" style={{ backgroundColor: colorString }}>
         &nbsp;
       </span>    
     );

@@ -1,0 +1,8 @@
+.Led {
+  display: flex;
+  width: 64px;
+  height: 64px;
+  margin: 20px;
+  color: white;
+  border-radius: 32px;
+}
