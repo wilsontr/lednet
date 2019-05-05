@@ -32,7 +32,7 @@ wss.on('connection', (ws, request) => {
         pixelId,
         ws,
       });  
-      console.log('clients connected:', wss.clients.length);
+      console.log('clients connected:', wss.clients.size);
     }
   });
 
@@ -41,7 +41,7 @@ wss.on('connection', (ws, request) => {
     if (clients[clientId]) {
       clients[clientId] = undefined;
       delete clients[clientId];
-      console.log('clients connected:', wss.clients.length);
+      console.log('clients connected:', wss.clients.size);
     }
   });
 
