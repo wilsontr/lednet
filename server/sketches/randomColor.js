@@ -1,13 +1,13 @@
 'use strict';
 
-const randomColor = (ledColors, width, height) => {
+const randomColor = (frameBuffer) => {
   setInterval(() => {
-    for (let idx = 0; idx < (height * width); idx++) {
-      ledColors[idx] = [
+    for (let idx = 0; idx < (frameBuffer.getHeight() * frameBuffer.getWidth()); idx++) {
+      frameBuffer.setPixelByIndex(idx, [
         Math.floor(Math.random() * 255),
         Math.floor(Math.random() * 255),
         Math.floor(Math.random() * 255),
-      ];
+      ]);
     }
   }, 500);  
 };

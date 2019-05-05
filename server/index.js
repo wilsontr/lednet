@@ -1,6 +1,8 @@
 const _ = require('lodash');
 const WebSocket = require('ws');
-const randomColor = require('./sketches/randomColor');
+// const randomColor = require('./sketches/randomColor');
+const sineWave = require('./sketches/sineWave');
+const FrameBuffer = require('./FrameBuffer');
 
 const padByte = number => String(number).padStart(3, '0');
 const serializeColor = ([r, g, b]) => `c${padByte(r)}${padByte(g)}${padByte(b)}`;
@@ -13,8 +15,6 @@ const wss = new WebSocket.Server({
 console.log('websocket server started on port 8080');
 
 const clients = [];
-let clientCount = 0;
-
 
 wss.on('connection', (ws, request) => {
   let pixelId = undefined;
@@ -32,8 +32,7 @@ wss.on('connection', (ws, request) => {
         pixelId,
         ws,
       });  
-      clientCount++;
-      console.log('clients connected:', clientCount);
+      console.log('clients connected:', wss.clients.length);
     }
   });
 
@@ -42,68 +41,27 @@ wss.on('connection', (ws, request) => {
     if (clients[clientId]) {
       clients[clientId] = undefined;
       delete clients[clientId];
-      clientCount--;
-      console.log('clients connected:', clientCount);
+      console.log('clients connected:', wss.clients.length);
     }
   });
 
   ws.on('error', error => {
     console.log('error', error);
   })
-
 });
 
+const frameBuffer = new FrameBuffer(8, 8);
 
-console.log('opc server started on port 7890');
-
-const gridSize = {
-  height: 3,
-  width: 3,
-};
-
-const ledColors = [];
-
-const phase = 0;
-const freq = 0.1;
-const amplitude = 128;
-const offset = 128;
-let frame = 0;
-
-for (let idx = 0; idx < (gridSize.height * gridSize.width); idx++) {
-  ledColors[idx] = [0, 0, 0];
-}
-
-// for (let x = 0; x < gridSize.width; x++ ) {
-//   ledColors[x] = new Array();
-//   for (let y = 0; y < gridSize.width; y++ ) {
-//     ledColors[x][y] = [0, 0, 0];
-//   }  
-// }
-
-// setInterval(() => {
-//   for (let x = 0; x < gridSize.width; x++) {
-//     for (let y = 0; y < gridSize.width; y++) {
-//       ledColors[x][y] = Math.random() * 255;
-//     }
-//   }
-// }, 500);
-
-randomColor(ledColors, gridSize.height, gridSize.width);
-
-// const getClientPixelColor = clientId => {
-//   const y = Math.floor(clientId / gridSize.width);
-//   const x = clientId % gridSize.width;
-
-// }
-
+// randomColor(frameBuffer);
+sineWave(frameBuffer);
 
 setInterval(() => { 
-  // const colorString = `c${serializeColor(color)}`;
-  // console.log('color', colorString);
-  // socket.send(colorString);
+  // console.log(frameBuffer.getPixels());
   clients.forEach(client => {
     if (client && client.ws) {      
-      const colorString = serializeColor(ledColors[client.pixelId]);
+      const color = frameBuffer.getPixelByIndex(client.pixelId);
+      // console.log('color', color);
+      const colorString = serializeColor(color);
       client.ws.send(colorString);
     }
   });

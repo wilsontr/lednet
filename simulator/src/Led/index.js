@@ -32,9 +32,9 @@ export class Led extends React.PureComponent {
       this.ws.onerror = this.handleWebsocketError;          
     } catch (error) {
       console.error(error);
-      setTimeout(() => {
-        this.connect();
-      }, 5000);
+      // setTimeout(() => {
+      //   this.connect();
+      // }, 5000);
     }
   }
 
@@ -61,16 +61,18 @@ export class Led extends React.PureComponent {
     }
   }
 
-  handleWebsocketClose = () => {
+  handleWebsocketClose = event => {
+    console.log('websocket close', event);
     setTimeout(() => {
       this.connect();
     }, 5000);
   }  
 
-  handleWebsocketError = () => {
-    setTimeout(() => {
-      this.connect();
-    }, 1000);
+  handleWebsocketError = event => {
+    console.log('websocket error', event);
+    // setTimeout(() => {
+    //   this.connect();
+    // }, 1000);
   }    
 
   handleWebsocketMessage = event => {
