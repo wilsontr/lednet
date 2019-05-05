@@ -20,7 +20,12 @@
   "dependencies": {
     "eslint": "^5.16.0",
     "eslint-plugin-node": "^8.0.1",
+    "is-integer": "^1.0.7",
     "lodash": "^4.17.11",
+    "openpixelcontrol-stream": "^0.1.2",
+    "parse-binary-stream": "^1.0.1",
+    "plexer": "^1.0.2",
+    "through2": "^3.0.1",
     "ws": "^6.2.1"
   }
 }

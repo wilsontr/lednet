@@ -1,11 +1,23 @@
-const WebSocket = require('ws');
 const _ = require('lodash');
+const WebSocket = require('ws');
+const net = require('net');
+const createParser = require('./parser');
+
+
+const opcServer = net.createServer(connection => {
+  connection.pipe(createParser()).on('data', message => {
+    console.log('message', message);
+  })
+});
+
+opcServer.listen(7890);
+
+console.log('opc server started on port 7890');
 
 const wss = new WebSocket.Server({ 
   port: 8080,
   clientTracking: true,
 });
-
 console.log('websocket server started on port 8080');
 
 const color = {
