@@ -71,7 +71,7 @@ void connectToServer() {
     Serial.println("Handshake failed.");
   }  
   
-  webSocketClient.sendData("Hello World!");  
+  webSocketClient.sendData(String("pixel " + String(PIXEL_ID, DEC)).c_str());  
 }
 
 void loop() {
@@ -82,16 +82,11 @@ void loop() {
   if (client.connected()) {
     webSocketClient.getData(data);
     if (data.length() > 0) {
-//      Serial.print("Received data: ");
       Serial.println(data);
       if (data.charAt(0) == 'c') {
         newR = data.substring(1, 4).toInt();
         newG = data.substring(4, 7).toInt();
         newB = data.substring(7, 10).toInt();
-//        Serial.println("New color");
-//        Serial.println(newR);
-//        Serial.println(newG);
-//        Serial.println(newB);
         led_set_color(newR, newG, newB);
       }
     }

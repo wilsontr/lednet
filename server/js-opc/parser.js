@@ -2,7 +2,6 @@
 
 const through = require('through2');
 const parse = require('parse-binary-stream');
-const { Writable } = require('stream');
 const plexer = require('plexer');
 
 const parseMessage = (read, callback) => {

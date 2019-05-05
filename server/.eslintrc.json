@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "eslint:recommended",
+    "plugin:node/recommended"
+  ],
+  "rules": {
+    "no-console": 0,
+    "node/prefer-global/console": 0
+  }
+}
